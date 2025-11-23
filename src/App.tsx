@@ -38,7 +38,7 @@ export function App() {
 							Audio Spectrum Analyzer sample app
 						</h1>
 					</CardHeader>
-					<CardContent className="pt-6 flex-col gap-4 w-[1200px]">
+					<CardContent className="pt-6 flex-col gap-4">
 						<div className="flex flex-col gap-16">
 							<div className="flex flex-col gap-4">
 								<Controller onStart={handleStart} onStop={handleStop} />

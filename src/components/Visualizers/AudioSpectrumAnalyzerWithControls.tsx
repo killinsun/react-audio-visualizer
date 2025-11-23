@@ -57,7 +57,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 				/>
 			</div>
 			<div className="flex flex-col gap-4">
-				<div className="flex grid-cols-3 gap-4">
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 					<div className="col-span-1">
 						<Label htmlFor="audioBarColor">Bar Color</Label>
 						<Input
