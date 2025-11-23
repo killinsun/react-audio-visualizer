@@ -5,17 +5,20 @@ import { Label } from "../ui/label";
 
 export interface AudioSpectrumAnalyzerWithControlsProps {
 	streamRef: React.RefObject<MediaStream>;
+	isRecording?: boolean;
 }
 
 export const AudioSpectrumAnalyzerWithControls = forwardRef<
 	{ start: () => void; stop: () => void },
 	AudioSpectrumAnalyzerWithControlsProps
->(({ streamRef }, ref) => {
+>(({ streamRef, isRecording = false }, ref) => {
 	const [barCount, setBarCount] = useState<number>(16);
 	const [barColor, setBarColor] = useState<string>("#9118c9");
 	const [barWidth, setBarWidth] = useState<number>(16);
 	const [barSpacing, setBarSpacing] = useState<number>(1);
 	const [ratio, setRatio] = useState<number>(128);
+	const [smoothingTimeConstant, setSmoothingTimeConstant] =
+		useState<number>(0.8);
 	const [showFrequencyLabels, setShowFrequencyLabels] =
 		useState<boolean>(false);
 	const [symetric, setSymetric] = useState<boolean>(true);
@@ -46,6 +49,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 					barWidth={barWidth}
 					barSpacing={barSpacing}
 					ratio={ratio}
+					smoothingTimeConstant={smoothingTimeConstant}
 					minFrequencyHz={minFrequencyHz}
 					maxFrequencyKHz={maxFrequencyKHz}
 					showFrequencyLabels={showFrequencyLabels}
@@ -61,6 +65,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							type="color"
 							value={barColor}
 							onChange={(e) => setBarColor(e.target.value)}
+							disabled={isRecording}
 						/>
 					</div>
 					<div className="col-span-1">
@@ -71,6 +76,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							min={1}
 							max={64}
 							onChange={(e) => setBarCount(Number(e.target.value))}
+							disabled={isRecording}
 						/>
 					</div>
 					<div className="col-span-1">
@@ -81,6 +87,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							min={1}
 							max={100}
 							onChange={(e) => setBarWidth(Number(e.target.value))}
+							disabled={isRecording}
 						/>
 					</div>
 					<div className="col-span-1">
@@ -91,6 +98,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							min={0}
 							max={100}
 							onChange={(e) => setBarSpacing(Number(e.target.value))}
+							disabled={isRecording}
 						/>
 					</div>
 					<div className="col-span-1">
@@ -100,6 +108,22 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							value={ratio}
 							id="ratio"
 							onChange={(e) => setRatio(Number(e.target.value))}
+							disabled={isRecording}
+						/>
+					</div>
+					<div className="col-span-1">
+						<Label htmlFor="smoothingTimeConstant">
+							Smoothing Time Constant
+						</Label>
+						<Input
+							type="number"
+							value={smoothingTimeConstant}
+							id="smoothingTimeConstant"
+							min={0}
+							max={1}
+							step={0.1}
+							onChange={(e) => setSmoothingTimeConstant(Number(e.target.value))}
+							disabled={isRecording}
 						/>
 					</div>
 					<div className="col-span-1">
@@ -108,6 +132,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							type="checkbox"
 							value={showFrequencyLabels ? "true" : "false"}
 							onChange={(e) => setShowFrequencyLabels(e.target.checked)}
+							disabled={isRecording}
 						/>
 					</div>
 					<div className="col-span-1">
@@ -117,6 +142,7 @@ export const AudioSpectrumAnalyzerWithControls = forwardRef<
 							id="audioSymetric"
 							checked={symetric}
 							onChange={(e) => setSymetric(e.target.checked)}
+							disabled={isRecording}
 						/>
 					</div>
 				</div>

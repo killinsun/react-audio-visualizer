@@ -46,10 +46,12 @@ export function App() {
 							<LinearHistoricalVolumeVisualizerWithControls
 								ref={linearVisualizerRef}
 								streamRef={streamRef}
+								isRecording={isRecording}
 							/>
 							<AudioSpectrumAnalyzerWithControls
 								ref={audioSpectrumRef}
 								streamRef={streamRef}
+								isRecording={isRecording}
 							/>
 						</div>
 					</CardContent>
