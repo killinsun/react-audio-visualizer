@@ -1,5 +1,7 @@
 # bun-react-tailwind-shadcn-template
 
+![HeroPic](./assets/hero_pic.png)
+
 To install dependencies:
 
 ```bash
