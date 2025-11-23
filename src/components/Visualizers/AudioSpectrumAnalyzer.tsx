@@ -96,12 +96,8 @@ export const AudioSpectrumAnalyzer: FC<AudioSpectrumAnalyzerProps> = (
 			const minFreq = minFrequencyHz ?? 0;
 			const maxFreq = (maxFrequencyKHz ?? sampleRate / 2000) * 1000; // kHzをHzに変換
 
-			// 各バインの周波数 = (バインインデックス * サンプリングレート) / FFTサイズ
 			const startBin = Math.floor((minFreq * fftSize) / sampleRate);
-			const endBin = Math.min(
-				Math.ceil((maxFreq * fftSize) / sampleRate),
-				bufferLength,
-			);
+			const endBin = Math.ceil((maxFreq * fftSize) / sampleRate);
 
 			return {
 				startBin: Math.max(0, startBin),
@@ -237,7 +233,7 @@ export const AudioSpectrumAnalyzer: FC<AudioSpectrumAnalyzerProps> = (
 				{frequencyBars.map((bar) => (
 					<div
 						key={bar.id}
-						className={`frequency-bar ${symetric ? "rounded" : "rounded-t"} transition-all duration-50 ease-in-out`}
+						className={`frequency-bar ${symetric ? "rounded" : "rounded-t"}`}
 						style={{
 							backgroundColor: getBarColor(bar.value),
 							marginLeft: bar.id === 0 ? 0 : getPixelValue(barSpacing),
