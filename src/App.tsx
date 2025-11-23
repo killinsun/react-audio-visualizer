@@ -34,12 +34,12 @@ export function App() {
 			<div className="flex justify-center items-center gap-8">
 				<Card className="bg-card/50 backdrop-blur-sm border-muted flex-1 flex flex-col h-full">
 					<CardHeader>
-						<h1 className="text-4xl font-bold my-4 leading-tight">
+						<h1 className="text-xl md:text-4xl font-bold my-4 leading-tight">
 							Audio Spectrum Analyzer sample app
 						</h1>
 					</CardHeader>
 					<CardContent className="pt-6 flex-col gap-4">
-						<div className="flex flex-col gap-16">
+						<div className="flex flex-col gap-8 md:gap-16">
 							<div className="flex flex-col gap-4">
 								<Controller onStart={handleStart} onStop={handleStop} />
 							</div>
