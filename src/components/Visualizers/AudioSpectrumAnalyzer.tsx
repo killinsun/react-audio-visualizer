@@ -116,31 +116,54 @@ export const AudioSpectrumAnalyzer: FC<AudioSpectrumAnalyzerProps> = (
 
 		const sampleRate = audioContextRef.current.sampleRate;
 		const { startBin, endBin } = getFrequencyBinRange(sampleRate, bufferLength);
-		const frequencyRangeLength = endBin - startBin;
 
-		if (frequencyRangeLength <= 0) {
+		if (endBin <= startBin) {
 			animationFrameRef.current = requestAnimationFrame(updateFrequencyData);
 			return;
 		}
 
-		// 周波数データをバーの数に合わせてサンプリング
-		// 各バーに均等に周波数範囲を割り当てる（最後のバーは endBin まで確実にカバー）
+		// 周波数範囲を計算（対数スケール用）
+		// 0Hzは対数で問題になるため最小20Hz
+		const minFreq = Math.max(minFrequencyHz ?? 20, 20);
+		const maxFreq = (maxFrequencyKHz ?? sampleRate / 2000) * 1000;
+
+		// 対数スケールの範囲を計算
+		const logMin = Math.log10(minFreq);
+		const logMax = Math.log10(maxFreq);
+		const logRange = logMax - logMin;
+
+		// 周波数データをバーの数に合わせてサンプリング（対数スケール）
 		setFrequencyBars((prevBars) =>
 			prevBars.map((bar, index) => {
-				// 各バーに対応する周波数帯域の範囲を計算（均等に分割）
-				const binRangePerBar = frequencyRangeLength / barCount;
-				const rangeStartIdx = Math.floor(startBin + index * binRangePerBar);
-				// 最後のバーの場合は endBin まで、それ以外は次のバーの開始位置まで
-				const rangeEndIdx =
+				// 各バーに対応する周波数帯域を対数スケールで計算
+				const logStep = logRange / barCount;
+				const freqStart = 10 ** (logMin + index * logStep);
+				const freqEnd = 10 ** (logMin + (index + 1) * logStep);
+
+				// 周波数をビンインデックスに変換
+				const rangeStartIdx = Math.max(
+					startBin,
+					Math.floor((freqStart * fftSize) / sampleRate),
+				);
+				const rangeEndIdx = Math.min(
+					endBin,
 					index === barCount - 1
 						? endBin
-						: Math.floor(startBin + (index + 1) * binRangePerBar);
+						: Math.ceil((freqEnd * fftSize) / sampleRate),
+				);
 
 				// 範囲が有効かチェック
 				if (rangeEndIdx <= rangeStartIdx) {
+					// 低周波数帯域で同じビンに複数のバーが割り当てられる場合
+					// そのビンの値を使用
+					const singleBinIdx = Math.min(
+						Math.floor((freqStart * fftSize) / sampleRate),
+						bufferLength - 1,
+					);
+					const normalizedValue = dataArray[singleBinIdx] / ratio;
 					return {
 						...bar,
-						value: 0,
+						value: normalizedValue,
 					};
 				}
 
@@ -161,7 +184,7 @@ export const AudioSpectrumAnalyzer: FC<AudioSpectrumAnalyzerProps> = (
 		);
 
 		animationFrameRef.current = requestAnimationFrame(updateFrequencyData);
-	}, [barCount, ratio, getFrequencyBinRange]);
+	}, [barCount, ratio, getFrequencyBinRange, minFrequencyHz, maxFrequencyKHz, fftSize]);
 
 	const startVisualization = useCallback(() => {
 		if (!streamRef.current) return;
